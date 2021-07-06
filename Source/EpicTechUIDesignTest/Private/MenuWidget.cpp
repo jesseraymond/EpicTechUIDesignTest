@@ -23,7 +23,7 @@ void UMenuWidget::NativeConstruct()
         }
 
         ChildContainer->ClearChildren();
-        ReadyForNextAnimation = true;
+        ReadyForNextMenuItemAnimation = true;
         AddChildren(ExistingButtons, ExistingSlots);
     }
 }
@@ -51,6 +51,7 @@ void UMenuWidget::AddChild(UThemedButtonWidget* NewChild, UVerticalBoxSlot* NewS
     if (ChildContainer)
     {
         ChildContainer->AddChild(NewChild);
+        NewChild->OnPressed.AddDynamic(this, &UMenuWidget::OnMenuButtonPress);
 
         if (NewSlot)
         {
@@ -65,17 +66,17 @@ void UMenuWidget::AddChild(UThemedButtonWidget* NewChild, UVerticalBoxSlot* NewS
     }
 
     Queue_RollIn.Add(NewChild);
-    TryNextRollIn();
+    TryNextMenuItemRollIn();
 }
 
-void UMenuWidget::TryNextRollIn()
+void UMenuWidget::TryNextMenuItemRollIn()
 {
-    if (ReadyForNextAnimation)
+    if (ReadyForNextMenuItemAnimation)
     {
         if (Queue_RollIn.Num() > 0)
         {
-            Queue_RollIn[0]->RollInStartEvent.BindDynamic(this, &UMenuWidget::AnimationStarted);
-            Queue_RollIn[0]->RollInEndEvent.BindDynamic(this, &UMenuWidget::AnimationFinished);
+            Queue_RollIn[0]->RollInStartEvent.BindDynamic(this, &UMenuWidget::MenuItemAnimationStarted);
+            Queue_RollIn[0]->RollInEndEvent.BindDynamic(this, &UMenuWidget::MenuItemAnimationFinished);
 
             Queue_RollIn[0]->BindToAnimationStarted(Queue_RollIn[0]->RollInAnimation, Queue_RollIn[0]->RollInStartEvent);
             Queue_RollIn[0]->BindToAnimationFinished(Queue_RollIn[0]->RollInAnimation, Queue_RollIn[0]->RollInEndEvent);
@@ -86,23 +87,40 @@ void UMenuWidget::TryNextRollIn()
     }
 }
 
-void UMenuWidget::AnimationStarted()
+void UMenuWidget::MenuItemAnimationStarted()
 {
-    ReadyForNextAnimation = false;
+    ReadyForNextMenuItemAnimation = false;
 
-    if (Sound_RollInStarted)
-        PlaySound(Sound_RollInStarted);
+    if (Sound_MenuItem_RollIn_Started)
+        PlaySound(Sound_MenuItem_RollIn_Started);
 }
 
-void UMenuWidget::AnimationFinished()
+void UMenuWidget::MenuItemAnimationFinished()
 {
-    if (Sound_RollInFinished)
-        PlaySound(Sound_RollInFinished);
+    if (Sound_MenuItem_RollIn_Finished)
+        PlaySound(Sound_MenuItem_RollIn_Finished);
 
-    ReadyForNextAnimation = true;
+    ReadyForNextMenuItemAnimation = true;
     if (Queue_RollIn.Num() > 0)
     {      
         Queue_RollIn.RemoveAt(0);
-        TryNextRollIn();
+        TryNextMenuItemRollIn();
     }
+}
+
+TArray<UWidget*> UMenuWidget::GetChildren()
+{
+    if (ChildContainer)
+    {
+        return ChildContainer->GetAllChildren();
+    }
+    else
+    {
+        return TArray<UWidget*>{ nullptr };
+    }
+}
+
+void UMenuWidget::OnMenuButtonPress_Implementation()
+{
+    OnMenuButtonPressed.Broadcast();
 }

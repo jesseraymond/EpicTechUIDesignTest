@@ -16,36 +16,44 @@ class EPICTECHUIDESIGNTEST_API UMenuWidget : public UUserWidget
     GENERATED_BODY()
 
 public:
+    UPROPERTY(BlueprintAssignable, Category = "Button|Event")
+        FOnButtonPressedEvent OnMenuButtonPressed;
+
+    UFUNCTION(BlueprintCallable)
+        void AddChildren(TArray<UThemedButtonWidget*> NewChildren, TArray<UVerticalBoxSlot*> NewSlots);
+
+    UFUNCTION(BlueprintCallable)
+        void AddChild(UThemedButtonWidget* NewChild, UVerticalBoxSlot* NewSlot = nullptr);
+
+    UFUNCTION(BlueprintCallable)
+        TArray<UWidget*> GetChildren();
+
+
+protected:
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Widgets")
         class UVerticalBox* ChildContainer;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        USoundBase* Sound_RollInStarted;
+        USoundBase* Sound_MenuItem_RollIn_Started;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        USoundBase* Sound_RollInFinished;
+        USoundBase* Sound_MenuItem_RollIn_Finished;
 
-    UFUNCTION(BlueprintCallable)
-    void AddChildren(TArray<UThemedButtonWidget*> NewChildren, TArray<UVerticalBoxSlot*> NewSlots);
-
-    UFUNCTION(BlueprintCallable)
-    void AddChild(UThemedButtonWidget* NewChild, UVerticalBoxSlot* NewSlot = nullptr);
-
-protected:
-    bool ReadyForNextAnimation;
+    bool ReadyForNextMenuItemAnimation;
     TArray<UWidget*> ExistingChildren;
+    TArray<UVerticalBoxSlot*> ExistingSlots;
     TArray<UThemedButtonWidget*> ExistingButtons;
     TArray<UThemedButtonWidget*> Queue_RollIn;
 
-    virtual void NativeConstruct() override;
-    void TryNextRollIn();
+    UFUNCTION(BlueprintNativeEvent)
+        void OnMenuButtonPress();
 
     UFUNCTION()
-    void AnimationStarted();
+        void MenuItemAnimationStarted();
     
     UFUNCTION()
-    void AnimationFinished();
+        void MenuItemAnimationFinished();
 
-private:
-    TArray<UVerticalBoxSlot*> ExistingSlots;
+    virtual void NativeConstruct() override;
+    void TryNextMenuItemRollIn();
 };

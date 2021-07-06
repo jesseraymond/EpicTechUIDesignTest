@@ -8,9 +8,7 @@ void UThemedButtonWidget::NativePreConstruct()
     Super::NativePreConstruct();
 
     if (!bIsEnabled)
-    {
         OnDisable();
-    }
 }
 
 void UThemedButtonWidget::NativeConstruct()
@@ -29,22 +27,18 @@ void UThemedButtonWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaT
     Super::NativeTick(MyGeometry, InDeltaTime);
 
     if (!bIsEnabled)
-    {
         OnDisable();
-    }
 }
 
-void UThemedButtonWidget::OnClick()
+void UThemedButtonWidget::OnClick_Implementation()
 {
     OnClicked.Broadcast();
 }
 
-void UThemedButtonWidget::OnPress()
+void UThemedButtonWidget::OnPress_Implementation()
 {
-    if (OuterBorder)
-        OuterBorder->SetBrushColor(Color_OuterBorder_Pressed);
-    if (InnerBorder)
-        InnerBorder->SetBrushColor(Color_InnerBorder_Pressed);
+    SetOuterColor(Color_Outer_Pressed);
+    SetInnerColor(Color_Inner_Pressed);
 
     if (Sound_Pressed)
         PlaySound(Sound_Pressed);
@@ -52,40 +46,32 @@ void UThemedButtonWidget::OnPress()
     OnPressed.Broadcast();
 }
 
-void UThemedButtonWidget::OnRelease()
+void UThemedButtonWidget::OnRelease_Implementation()
 {
-    if (OuterBorder)
-        OuterBorder->SetBrushColor(Color_OuterBorder_Hovered);
-    if (InnerBorder)
-        InnerBorder->SetBrushColor(Color_InnerBorder_Hovered);
+    SetOuterColor(Color_Outer_Hovered);
+    SetInnerColor(Color_Inner_Hovered);
 
     OnReleased.Broadcast();
 }
 
-void UThemedButtonWidget::OnHover()
+void UThemedButtonWidget::OnHover_Implementation()
 {
-    if (OuterBorder)
-        OuterBorder->SetBrushColor(Color_OuterBorder_Hovered);
-    if (InnerBorder)
-        InnerBorder->SetBrushColor(Color_InnerBorder_Hovered);
+    SetOuterColor(Color_Outer_Hovered);
+    SetInnerColor(Color_Inner_Hovered);
 
     OnHovered.Broadcast();
 }
 
-void UThemedButtonWidget::OnUnhover()
+void UThemedButtonWidget::OnUnhover_Implementation()
 {
-    if (OuterBorder)
-        OuterBorder->SetBrushColor(Color_OuterBorder);
-    if (InnerBorder)
-        InnerBorder->SetBrushColor(Color_InnerBorder);
+    SetOuterColor(Color_Outer_Default);
+    SetInnerColor(Color_Inner_Default);
 
     OnUnhovered.Broadcast();
 }
 
-void UThemedButtonWidget::OnDisable()
+void UThemedButtonWidget::OnDisable_Implementation()
 {
-    if (OuterBorder)
-        OuterBorder->SetBrushColor(Color_OuterBorder_Disabled);
-    if (InnerBorder)
-        InnerBorder->SetBrushColor(Color_InnerBorder_Disabled);
+    SetOuterColor(Color_Outer_Disabled);
+    SetInnerColor(Color_Inner_Disabled);
 }
