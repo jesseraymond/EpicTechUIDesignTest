@@ -26,6 +26,18 @@ public:
         void AddChild(UThemedButtonWidget* NewChild, UVerticalBoxSlot* NewSlot = nullptr);
 
     UFUNCTION(BlueprintCallable)
+        void ClearChildren();
+
+    UFUNCTION(BlueprintCallable)
+        void RemoveChildren(TArray<UThemedButtonWidget*> ChildrenToRemove);
+
+    UFUNCTION(BlueprintCallable)
+        void RemoveChild(UThemedButtonWidget* ChildToRemove);
+
+    UFUNCTION(BlueprintCallable)
+        void ReanimateMenu();
+
+    UFUNCTION(BlueprintCallable)
         TArray<UWidget*> GetChildren();
 
 
@@ -39,21 +51,39 @@ protected:
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
         USoundBase* Sound_MenuItem_RollIn_Finished;
 
-    bool ReadyForNextMenuItemAnimation;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+        USoundBase* Sound_MenuItem_RollOut_Started;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+        USoundBase* Sound_MenuItem_RollOut_Finished;
+
+    bool ReadyForNextRollIn = true;
+    bool ReadyForNextRollOut = true;
+    bool IsReanimating;
     TArray<UWidget*> ExistingChildren;
     TArray<UVerticalBoxSlot*> ExistingSlots;
     TArray<UThemedButtonWidget*> ExistingButtons;
+    TArray<UThemedButtonWidget*> ReanimatedChildren;
+    TArray<UVerticalBoxSlot*> ReanimatedSlots;
     TArray<UThemedButtonWidget*> Queue_RollIn;
+    TArray<UThemedButtonWidget*> Queue_RollOut;
 
     UFUNCTION(BlueprintNativeEvent)
         void OnMenuButtonPress();
 
     UFUNCTION()
-        void MenuItemAnimationStarted();
+        void MenuItemRollInAnimationStarted();
     
     UFUNCTION()
-        void MenuItemAnimationFinished();
+        void MenuItemRollInAnimationFinished();
+
+    UFUNCTION()
+        void MenuItemRollOutAnimationStarted();
+
+    UFUNCTION()
+        void MenuItemRollOutAnimationFinished();
 
     virtual void NativeConstruct() override;
     void TryNextMenuItemRollIn();
+    void TryNextMenuItemRollOut();
 };

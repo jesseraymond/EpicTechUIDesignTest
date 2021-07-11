@@ -21,11 +21,26 @@ public:
     UPROPERTY(BlueprintReadOnly, Transient, meta = (BindWidgetAnim))
         class UWidgetAnimation* RollInAnimation;
 
+    UPROPERTY(BlueprintReadOnly, Transient, meta = (BindWidgetAnim))
+        class UWidgetAnimation* RollOutAnimation;
+
+    UPROPERTY(BlueprintReadOnly, Transient, meta = (BindWidgetAnim))
+        class UWidgetAnimation* HoverAnimation;
+
+    UPROPERTY(BlueprintReadOnly, Transient, meta = (BindWidgetAnim))
+        class UWidgetAnimation* UnhoverAnimation;
+
     UPROPERTY(BlueprintReadOnly, Transient)
         FWidgetAnimationDynamicEvent RollInStartEvent;
 
     UPROPERTY(BlueprintReadOnly, Transient)
         FWidgetAnimationDynamicEvent RollInEndEvent;
+
+    UPROPERTY(BlueprintReadOnly, Transient)
+        FWidgetAnimationDynamicEvent RollOutStartEvent;
+
+    UPROPERTY(BlueprintReadOnly, Transient)
+        FWidgetAnimationDynamicEvent RollOutEndEvent;
 
     UPROPERTY(BlueprintAssignable, Category = "Button|Event")
         FOnButtonClickedEvent OnClicked;
@@ -48,6 +63,12 @@ protected:
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
         USoundBase* Sound_Pressed;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+        USoundBase* Sound_Hovered;
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+        USoundBase* Sound_Unhovered;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
         FLinearColor Color_Outer_Default = FLinearColor(0.181164, 0.913099, 0.40724, 1);

@@ -23,7 +23,6 @@ void UMenuWidget::NativeConstruct()
         }
 
         ChildContainer->ClearChildren();
-        ReadyForNextMenuItemAnimation = true;
         AddChildren(ExistingButtons, ExistingSlots);
     }
 }
@@ -51,7 +50,9 @@ void UMenuWidget::AddChild(UThemedButtonWidget* NewChild, UVerticalBoxSlot* NewS
     if (ChildContainer)
     {
         ChildContainer->AddChild(NewChild);
-        NewChild->OnPressed.AddDynamic(this, &UMenuWidget::OnMenuButtonPress);
+        
+        if (!IsReanimating)
+            NewChild->OnPressed.AddDynamic(this, &UMenuWidget::OnMenuButtonPress);
 
         if (NewSlot)
         {
@@ -69,43 +70,165 @@ void UMenuWidget::AddChild(UThemedButtonWidget* NewChild, UVerticalBoxSlot* NewS
     TryNextMenuItemRollIn();
 }
 
+void UMenuWidget::ClearChildren()
+{
+    for (int32 i = 0; i < GetChildren().Num(); i++)
+    {
+        if (UThemedButtonWidget* ButtonChild = Cast<UThemedButtonWidget>(GetChildren()[i]))
+        {
+            RemoveChild(ButtonChild);
+        }
+        else
+        {
+            ChildContainer->RemoveChild(GetChildren()[i]);
+        }
+    }
+}
+
+void UMenuWidget::RemoveChildren(TArray<UThemedButtonWidget*> ChildrenToRemove)
+{
+    for (int32 i = 0; i < ChildrenToRemove.Num(); i++)
+    {
+        RemoveChild(ChildrenToRemove[i]);
+    }
+}
+
+void UMenuWidget::RemoveChild(UThemedButtonWidget* ChildToRemove)
+{
+    if (!ChildToRemove)
+        return;
+
+    Queue_RollOut.Add(ChildToRemove);
+    TryNextMenuItemRollOut();
+}
+
 void UMenuWidget::TryNextMenuItemRollIn()
 {
-    if (ReadyForNextMenuItemAnimation)
+    if (ReadyForNextRollIn)
     {
         if (Queue_RollIn.Num() > 0)
         {
-            Queue_RollIn[0]->RollInStartEvent.BindDynamic(this, &UMenuWidget::MenuItemAnimationStarted);
-            Queue_RollIn[0]->RollInEndEvent.BindDynamic(this, &UMenuWidget::MenuItemAnimationFinished);
+            if (!Queue_RollIn[0]->RollInStartEvent.IsBound())
+            {
+                Queue_RollIn[0]->RollInStartEvent.BindDynamic(this, &UMenuWidget::MenuItemRollInAnimationStarted);
+                Queue_RollIn[0]->BindToAnimationStarted(Queue_RollIn[0]->RollInAnimation, Queue_RollIn[0]->RollInStartEvent);
+            }
 
-            Queue_RollIn[0]->BindToAnimationStarted(Queue_RollIn[0]->RollInAnimation, Queue_RollIn[0]->RollInStartEvent);
-            Queue_RollIn[0]->BindToAnimationFinished(Queue_RollIn[0]->RollInAnimation, Queue_RollIn[0]->RollInEndEvent);
-
+            if (!Queue_RollIn[0]->RollInEndEvent.IsBound())
+            {
+                Queue_RollIn[0]->RollInEndEvent.BindDynamic(this, &UMenuWidget::MenuItemRollInAnimationFinished);
+                Queue_RollIn[0]->BindToAnimationFinished(Queue_RollIn[0]->RollInAnimation, Queue_RollIn[0]->RollInEndEvent);
+            }
+            
             Queue_RollIn[0]->PlayAnimation(Queue_RollIn[0]->RollInAnimation);
             Queue_RollIn[0]->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
         }
     }
 }
 
-void UMenuWidget::MenuItemAnimationStarted()
+void UMenuWidget::TryNextMenuItemRollOut()
 {
-    ReadyForNextMenuItemAnimation = false;
+    if (ReadyForNextRollOut)
+    {
+        if (Queue_RollOut.Num() > 0)
+        {
+            if (!Queue_RollOut[0]->RollOutStartEvent.IsBound())
+            {
+                Queue_RollOut[0]->RollOutStartEvent.BindDynamic(this, &UMenuWidget::MenuItemRollOutAnimationStarted);
+                Queue_RollOut[0]->BindToAnimationStarted(Queue_RollOut[0]->RollOutAnimation, Queue_RollOut[0]->RollOutStartEvent);
+            }
+
+            if (!Queue_RollOut[0]->RollOutEndEvent.IsBound())
+            {
+                Queue_RollOut[0]->RollOutEndEvent.BindDynamic(this, &UMenuWidget::MenuItemRollOutAnimationFinished);
+                Queue_RollOut[0]->BindToAnimationFinished(Queue_RollOut[0]->RollOutAnimation, Queue_RollOut[0]->RollOutEndEvent);
+            }
+
+            Queue_RollOut[0]->PlayAnimation(Queue_RollOut[0]->RollOutAnimation);
+        }
+    }
+}
+
+void UMenuWidget::MenuItemRollInAnimationStarted()
+{
+    ReadyForNextRollIn = false;
 
     if (Sound_MenuItem_RollIn_Started)
         PlaySound(Sound_MenuItem_RollIn_Started);
 }
 
-void UMenuWidget::MenuItemAnimationFinished()
+void UMenuWidget::MenuItemRollInAnimationFinished()
 {
     if (Sound_MenuItem_RollIn_Finished)
         PlaySound(Sound_MenuItem_RollIn_Finished);
 
-    ReadyForNextMenuItemAnimation = true;
+    ReadyForNextRollIn = true;
     if (Queue_RollIn.Num() > 0)
     {      
         Queue_RollIn.RemoveAt(0);
         TryNextMenuItemRollIn();
     }
+}
+
+void UMenuWidget::MenuItemRollOutAnimationStarted()
+{
+    ReadyForNextRollOut = false;
+
+    if (Sound_MenuItem_RollOut_Started)
+        PlaySound(Sound_MenuItem_RollOut_Started);
+}
+
+
+void UMenuWidget::MenuItemRollOutAnimationFinished()
+{
+    if (Sound_MenuItem_RollOut_Finished)
+        PlaySound(Sound_MenuItem_RollOut_Finished);
+
+    ReadyForNextRollOut = true;
+    if (Queue_RollOut.Num() > 0)
+    {
+        if (IsReanimating)
+        {
+            if (Queue_RollOut.Num() == 1)
+            {
+                AddChildren(ReanimatedChildren, ReanimatedSlots);
+                IsReanimating = false;
+            }
+        }
+        else
+        {
+            if (ChildContainer)
+            {
+                if (ChildContainer->HasChild(Queue_RollOut[0]))
+                    ChildContainer->RemoveChild(Queue_RollOut[0]);
+            }
+        }
+
+        Queue_RollOut.RemoveAt(0);
+        TryNextMenuItemRollOut();
+    }
+}
+
+void UMenuWidget::ReanimateMenu()
+{
+    IsReanimating = true;
+    ReanimatedChildren.Empty();
+    ReanimatedSlots.Empty();
+    Queue_RollIn.Empty();
+    Queue_RollOut.Empty();
+    
+    for (int32 i = 0; i < GetChildren().Num(); i++)
+    {
+        if (UThemedButtonWidget* ButtonChild = Cast<UThemedButtonWidget>(GetChildren()[i]))
+        {
+            ReanimatedChildren.Add(ButtonChild);
+
+            if (UVerticalBoxSlot* BoxSlot = Cast<UVerticalBoxSlot>(ButtonChild->Slot))
+                ReanimatedSlots.Add(BoxSlot);
+        }
+    }
+
+    RemoveChildren(ReanimatedChildren);
 }
 
 TArray<UWidget*> UMenuWidget::GetChildren()

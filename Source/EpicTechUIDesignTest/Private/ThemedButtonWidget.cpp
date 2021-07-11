@@ -7,7 +7,9 @@ void UThemedButtonWidget::NativePreConstruct()
 {
     Super::NativePreConstruct();
 
-    if (!bIsEnabled)
+    if (bIsEnabled)
+        OnUnhover();
+    else
         OnDisable();
 }
 
@@ -59,6 +61,11 @@ void UThemedButtonWidget::OnHover_Implementation()
     SetOuterColor(Color_Outer_Hovered);
     SetInnerColor(Color_Inner_Hovered);
 
+    if (Sound_Hovered)
+        PlaySound(Sound_Hovered);
+
+    PlayAnimation(HoverAnimation);
+
     OnHovered.Broadcast();
 }
 
@@ -66,6 +73,11 @@ void UThemedButtonWidget::OnUnhover_Implementation()
 {
     SetOuterColor(Color_Outer_Default);
     SetInnerColor(Color_Inner_Default);
+
+    if (Sound_Unhovered)
+        PlaySound(Sound_Unhovered);
+
+    PlayAnimation(UnhoverAnimation);
 
     OnUnhovered.Broadcast();
 }

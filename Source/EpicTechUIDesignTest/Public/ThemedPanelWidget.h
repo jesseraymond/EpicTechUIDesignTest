@@ -6,11 +6,10 @@
 #include "Components/PanelWidget.h"
 #include "Components/Border.h"
 #include "Components/Overlay.h"
+#include "Layout/Margin.h"
 #include "ThemedPanelWidget.generated.h"
 
-/**
- *
- */
+
 UCLASS()
 class EPICTECHUIDESIGNTEST_API UThemedPanelWidget : public UUserWidget
 {
@@ -20,6 +19,9 @@ public:
 
     UFUNCTION(BlueprintCosmetic)
         void UpdateDynamicMaterialInstanceProperties();
+
+    UFUNCTION(BlueprintCosmetic)
+        void SetContentPadding(FMargin NewValue);
 
     UFUNCTION(BlueprintCosmetic)
         void SetOuterColor(FLinearColor NewValue);
@@ -52,13 +54,7 @@ public:
         void SetPositionInnerBottomLeft(FVector2D NewValue);
 
     UFUNCTION(BlueprintCosmetic)
-        void SetSmoothness(float NewValue);
-
-    UFUNCTION(BlueprintCosmetic)
-        void SetOuterMaskThickness(float NewValue);
-
-    UFUNCTION(BlueprintCosmetic)
-        void SetInnerMaskThickness(float NewValue);
+        void SetBlur(FVector2D NewValue);
 
 protected:
     UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Widgets")
@@ -77,43 +73,41 @@ protected:
         UMaterialInstanceDynamic* DynamicMaterialInstance;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        FLinearColor Color_Outer = FLinearColor(0.181164, 0.913099, 0.40724, 1);
+        FLinearColor Color_Outer = FLinearColor(1, 1, 1, 1);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        FLinearColor Color_Inner = FLinearColor(0.000304, 0.064803, 0.072272, 1);
+        FLinearColor Color_Inner = FLinearColor(0.003677, 0.274677, 0.219526, 1);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        FVector2D Position_Outer_TopLeft = FVector2D(0.0625, 0.0625);
+        FVector2D Position_Outer_TopLeft = FVector2D(0.7, 0.85);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        FVector2D Position_Outer_TopRight = FVector2D(1, 0);
+        FVector2D Position_Outer_TopRight = FVector2D(1.0, 0.0);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        FVector2D Position_Outer_BottomRight = FVector2D(0.90625, 0.94);
+        FVector2D Position_Outer_BottomRight = FVector2D(0.0, 0.55);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        FVector2D Position_Outer_BottomLeft = FVector2D(0, 1);
+        FVector2D Position_Outer_BottomLeft = FVector2D(0.1, 1);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        FVector2D Position_Inner_TopLeft = FVector2D(0.1, 0.13);
+        FVector2D Position_Inner_TopLeft = FVector2D(0.9, 0.9);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        FVector2D Position_Inner_TopRight = FVector2D(1, 0.02);
+        FVector2D Position_Inner_TopRight = FVector2D(0.85, 0.2);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        FVector2D Position_Inner_BottomRight = FVector2D(0.87, 0.88);
+        FVector2D Position_Inner_BottomRight = FVector2D(0.0, 0.25);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        FVector2D Position_Inner_BottomLeft = FVector2D(0.005, 0.98);
+        FVector2D Position_Inner_BottomLeft = FVector2D(0.0, 1.0);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        float Smoothness = 0.005;
+        FVector2D Blur = FVector2D(0.01, 0.01);
 
+    //Requires the Slate UI module in EpicTechUIDesignTest.Build.cs
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        float Thickness_OuterMask = 0.25;
-
-    UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        float Thickness_InnerMask = 0.35;
+        FMargin Padding_Content = FMargin(70, 35);
 
     virtual void NativePreConstruct() override;
 };
