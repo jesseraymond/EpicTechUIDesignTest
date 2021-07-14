@@ -18,6 +18,9 @@ class EPICTECHUIDESIGNTEST_API UThemedButtonWidget : public UThemedPanelWidget
     GENERATED_BODY()
 
 public:
+    UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Widgets")
+        class UButton* MainButton;
+
     UPROPERTY(BlueprintReadOnly, Transient, meta = (BindWidgetAnim))
         class UWidgetAnimation* RollInAnimation;
 
@@ -58,9 +61,6 @@ public:
         FOnButtonHoverEvent OnUnhovered;
 
 protected:
-    UPROPERTY(BlueprintReadOnly, meta = (BindWidget), Category = "Widgets")
-        class UButton* MainButton;
-
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
         USoundBase* Sound_Pressed;
 
@@ -94,6 +94,26 @@ protected:
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
         FLinearColor Color_Inner_Disabled = FLinearColor(0.072, 0.072, 0.072, 1);
 
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+        FVector2D Position_Inner_TopRight_Hover = FVector2D(0, 0.4);
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+        FVector2D Position_Inner_TopLeft_Hover = FVector2D(0.15, 0.8);
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+        FVector2D Position_Inner_BottomRight_Hover= FVector2D(0, 0.4);
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+        FVector2D Position_Inner_BottomLeft_Hover = FVector2D(0.15, 0.8);
+
+    FVector2D Position_Inner_TopRight_Unhover;
+    FVector2D Position_Inner_TopLeft_Unhover;
+    FVector2D Position_Inner_BottomRight_Unhover;
+    FVector2D Position_Inner_BottomLeft_Unhover;
+    float HoverTimeElapsed;
+    float UnhoverTimeElapsed;
+    float CornerAnimationDuration = 0.35;
+
     UFUNCTION(BlueprintNativeEvent)
         void OnClick();
 
@@ -116,3 +136,6 @@ protected:
     virtual void NativeConstruct() override;
     virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 };
+
+
+

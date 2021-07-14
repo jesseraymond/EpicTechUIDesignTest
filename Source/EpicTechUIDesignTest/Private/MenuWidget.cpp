@@ -164,7 +164,13 @@ void UMenuWidget::MenuItemRollInAnimationFinished()
 
     ReadyForNextRollIn = true;
     if (Queue_RollIn.Num() > 0)
-    {      
+    {
+        if (Queue_RollIn[0]->MainButton)
+            Queue_RollIn[0]->MainButton->SetColorAndOpacity(FLinearColor::White);
+
+        if (Queue_RollIn[0]->PanelRootContainer)
+            Queue_RollIn[0]->PanelRootContainer->SetRenderTranslation(FVector2D::ZeroVector);
+
         Queue_RollIn.RemoveAt(0);
         TryNextMenuItemRollIn();
     }
