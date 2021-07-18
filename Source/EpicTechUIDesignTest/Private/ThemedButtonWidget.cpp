@@ -6,14 +6,20 @@
 void UThemedButtonWidget::NativePreConstruct()
 {
     Super::NativePreConstruct();
-
-    Position_Inner_BottomRight_Unhover = Position_Inner_BottomRight;
+    Position_Inner_TopLeft_Unhover = Position_Inner_TopLeft;
+    Position_Inner_TopRight_Unhover = Position_Inner_TopRight;
     Position_Inner_BottomLeft_Unhover = Position_Inner_BottomLeft;
+    Position_Inner_BottomRight_Unhover = Position_Inner_BottomRight;
 
     if (bIsEnabled)
-        OnUnhover();
+    {
+        SetOuterColor(Color_Outer_Default);
+        SetInnerColor(Color_Inner_Default);
+    }
     else
+    {
         OnDisable();
+    }
 }
 
 void UThemedButtonWidget::NativeConstruct()
@@ -42,8 +48,10 @@ void UThemedButtonWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaT
             if (HoverTimeElapsed < CornerAnimationDuration)
             {
                 HoverTimeElapsed += InDeltaTime;
-                SetPositionInnerBottomRight(FMath::Lerp(Position_Inner_BottomRight, Position_Inner_BottomRight_Hover, HoverTimeElapsed / CornerAnimationDuration));
+                SetPositionInnerTopLeft(FMath::Lerp(Position_Inner_TopLeft, Position_Inner_TopLeft_Hover, HoverTimeElapsed / CornerAnimationDuration));
+                SetPositionInnerTopRight(FMath::Lerp(Position_Inner_TopRight, Position_Inner_TopRight_Hover, HoverTimeElapsed / CornerAnimationDuration));
                 SetPositionInnerBottomLeft(FMath::Lerp(Position_Inner_BottomLeft, Position_Inner_BottomLeft_Hover, HoverTimeElapsed / CornerAnimationDuration));
+                SetPositionInnerBottomRight(FMath::Lerp(Position_Inner_BottomRight, Position_Inner_BottomRight_Hover, HoverTimeElapsed / CornerAnimationDuration));
             }
         }
         else
@@ -53,6 +61,8 @@ void UThemedButtonWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaT
             if (UnhoverTimeElapsed < CornerAnimationDuration)
             {
                 UnhoverTimeElapsed += InDeltaTime;
+                SetPositionInnerTopLeft(FMath::Lerp(Position_Inner_TopLeft, Position_Inner_TopLeft_Unhover, UnhoverTimeElapsed / CornerAnimationDuration));
+                SetPositionInnerTopRight(FMath::Lerp(Position_Inner_TopRight, Position_Inner_TopRight_Unhover, UnhoverTimeElapsed / CornerAnimationDuration));
                 SetPositionInnerBottomRight(FMath::Lerp(Position_Inner_BottomRight, Position_Inner_BottomRight_Unhover, UnhoverTimeElapsed / CornerAnimationDuration));
                 SetPositionInnerBottomLeft(FMath::Lerp(Position_Inner_BottomLeft, Position_Inner_BottomLeft_Unhover, UnhoverTimeElapsed / CornerAnimationDuration));
             }
@@ -88,12 +98,6 @@ void UThemedButtonWidget::OnHover_Implementation()
 {
     SetOuterColor(Color_Outer_Hovered);
     SetInnerColor(Color_Inner_Hovered);
-
-    //if (MainButton)
-    //    MainButton->SetColorAndOpacity(FLinearColor::White);
-
-    //if (PanelRootContainer)
-    //    PanelRootContainer->SetRenderTranslation(FVector2D::ZeroVector);
 
     if (Sound_Hovered)
         PlaySound(Sound_Hovered);

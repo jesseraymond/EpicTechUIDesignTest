@@ -95,21 +95,21 @@ protected:
         FLinearColor Color_Inner_Disabled = FLinearColor(0.072, 0.072, 0.072, 1);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        FVector2D Position_Inner_TopRight_Hover = FVector2D(0, 0.4);
-
-    UPROPERTY(BlueprintReadWrite, EditAnywhere)
         FVector2D Position_Inner_TopLeft_Hover = FVector2D(0.15, 0.8);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        FVector2D Position_Inner_BottomRight_Hover= FVector2D(0, 0.4);
+        FVector2D Position_Inner_TopRight_Hover = FVector2D(0, 0.4);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
         FVector2D Position_Inner_BottomLeft_Hover = FVector2D(0.15, 0.8);
 
-    FVector2D Position_Inner_TopRight_Unhover;
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+        FVector2D Position_Inner_BottomRight_Hover= FVector2D(0, 0.4);
+    
     FVector2D Position_Inner_TopLeft_Unhover;
-    FVector2D Position_Inner_BottomRight_Unhover;
+    FVector2D Position_Inner_TopRight_Unhover;
     FVector2D Position_Inner_BottomLeft_Unhover;
+    FVector2D Position_Inner_BottomRight_Unhover;
     float HoverTimeElapsed;
     float UnhoverTimeElapsed;
     float CornerAnimationDuration = 0.35;

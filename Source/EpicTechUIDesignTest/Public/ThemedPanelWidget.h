@@ -113,10 +113,10 @@ protected:
         FVector2D Position_Outer_TopRight = FVector2D(1.05, 0);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        FVector2D Position_Outer_BottomRight = FVector2D(0.5, 0.8);
+        FVector2D Position_Outer_BottomLeft = FVector2D(-0.05, 1);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        FVector2D Position_Outer_BottomLeft = FVector2D(-0.05, 1);
+        FVector2D Position_Outer_BottomRight = FVector2D(0.5, 0.8);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
         FVector2D Position_Inner_TopLeft = FVector2D(0.75, 0.8);
@@ -125,10 +125,10 @@ protected:
         FVector2D Position_Inner_TopRight = FVector2D(0.9, 0.2);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        FVector2D Position_Inner_BottomRight = FVector2D(0.25, 0.55);
+        FVector2D Position_Inner_BottomLeft = FVector2D(0.15, 0.9);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-        FVector2D Position_Inner_BottomLeft = FVector2D(0.15, 0.9);
+        FVector2D Position_Inner_BottomRight = FVector2D(0.25, 0.55);
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
         FVector2D Blur = FVector2D(0.04, 0.04);
